@@ -1,0 +1,8 @@
+{
+  "ruby.rubocop.executePath": "C:\\Ruby27-x64\\bin\\",
+  "ruby.rubocop.configFilePath": "C:\\Dev\\Ruby\\Gems\\pagseguro_recorrencia\\.rubocop.yml",
+  "ruby.rubocop.onSave": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false
+  }
