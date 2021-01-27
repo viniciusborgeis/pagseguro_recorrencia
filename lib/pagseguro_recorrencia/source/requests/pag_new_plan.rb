@@ -115,6 +115,12 @@ module PagRequests
       request.body = body
 
       response = https.request(request)
+
+      3.times do |_i|
+        response = https.request(request)
+        break if response.code != '404'
+      end
+
       parse_response(response)
     end
 
@@ -123,7 +129,7 @@ module PagRequests
       response_msg = response.msg
       response_body = parse_xml_to_hash(response.read_body)[:preApprovalRequest] if response_code == '200'
       response_body = parse_xml_to_hash(response.read_body)[:errors] if response_code == '400'
-      response_body = parse_xml_to_hash(response.read_body) unless %w[200 400].include?(response_code)
+      response_body = parse_xml_to_hash(response.read_body) unless %w[200 400]
 
       {
         code: response_code,
@@ -157,7 +163,6 @@ module PagRequests
       %i[
         plan_name
         charge_type
-        plan_identifier
         amount_per_payment
       ]
     end
