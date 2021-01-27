@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<errors>
+    <error>
+        <code>11088</code>
+        <message>preApprovalName is required</message>
+    </error>
+</errors>
