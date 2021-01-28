@@ -92,27 +92,28 @@ payload = {
 </br>
 
 **PAYLOAD** *campos com * são obriatórios*
-> ***plan_name**:string - Nome do plano a ser criado
 
-> ***charge_type**:symbol - Indica o modelo do pagamento recorrente **[:manual :auto]**
+`*plan_name:string` - Nome do plano a ser criado
 
-> ***period**:symbol - Periodicidade da cobrança **[:weekly :monthly :bimonthly :trimonthly :semiannually :yearly]**
+`*charge_type:symbol` - Indica o modelo do pagamento recorrente **[:manual :auto]**
 
-> **cancel_url**:string - Determina a URL para a qual o comprador será redirecionado ao cancelar a recorrência diretamente em sua conta PagSeguro
+`*period:symbol` - Periodicidade da cobrança **[:weekly :monthly :bimonthly :trimonthly :semiannually :yearly]**
 
-> ***amount_per_payment**:string - Valor exato de cada cobrança - Formato: Decimal, com duas casas decimais separadas por ponto (p.e, 1234.56). Deve ser um valor maior ou igual a 1.00 e menor ou igual a 2000.00
+`cancel_url:string` - Determina a URL para a qual o comprador será redirecionado ao cancelar a recorrência diretamente em sua conta PagSeguro
 
-> **membership_fee**:string - Valor da taxa de adesão/matricula. Sempre será cobrada juntamente com a primeira parcela do pagamento, independente se o plano é pré-pago ou pós-pago.
+`*amount_per_payment:string` - Valor exato de cada cobrança - Formato: Decimal, com duas casas decimais separadas por ponto (p.e, 1234.56). Deve ser um valor maior ou igual a 1.00 e menor ou igual a 2000.00
 
-> **trial_period_duration**:string - Período de teste, em dias. A recorrência mantém o status de iniciada durante o período de testes, de modo que a primeira cobrança só ocorrerá após esse período.
+`membership_fee:string` - Valor da taxa de adesão/matricula. Sempre será cobrada juntamente com a primeira parcela do pagamento, independente se o plano é pré-pago ou pós-pago.
 
-> **expiration_value**:string - Número de cobranças até que a recorrência expire.
+`trial_period_duration:string` - Período de teste, em dias. A recorrência mantém o status de iniciada durante o período de testes, de modo que a primeira cobrança só ocorrerá após esse período.
 
-> **expiration_unit**:string - Período em que a recorrência expira.
+`expiration_value:string` - Número de cobranças até que a recorrência expire.
 
-> **max_uses**:string - Quantidade máxima de uso do plano
+`expiration_unit:string` - Período em que a recorrência expira.
 
-> **plan_identifier**:string - Código de referência da assinatura no sistema
+`max_uses:string` - Quantidade máxima de uso do plano
+
+`plan_identifier:string` - Código de referência da assinatura no sistema
 
 </br>
 
@@ -129,15 +130,15 @@ payload = {
 }
 ```
 
-> **{:code}**: Código HTTP da requisição
+`{:code}`: Código HTTP da requisição
 
-> **{:message}**: Mensagem padrão da API do PagSeguro
+`{:message}`: Mensagem padrão da API do PagSeguro
 
-> **{:body}**: Corpo da Resposta
+`{:body}`: Corpo da Resposta
 
-> **{:body => {:code}}**: Identificador único(Código) do plano no PagSeguro
+`{:body => {:code}}`: Identificador único(Código) do plano no PagSeguro
 
-> **{:body => {:date}}**: Data em que foi criado esse plano
+`{:body => {:date}}`: Data em que foi criado esse plano
 
 </br>
 
@@ -156,17 +157,17 @@ payload = {
 }
 ```
 
-> **{:code}**: Código HTTP da requisição
+`{:code}`: Código HTTP da requisição
 
-> **{:message}**: Mensagem padrão da API do PagSeguro
+`{:message}`: Mensagem padrão da API do PagSeguro
 
-> **{:body}**: Corpo da Resposta
+`{:body}`: Corpo da Resposta
 
-> **{:body => {:error}}**: Nó contendo corpo do error
+`{:body {:error}}`: Nó contendo corpo do error
 
-> **{:body => {:error => {:code}}}**: Código do error na API do PagSeguro
+`{:body {:error => {:code}}}`: Código do error na API do PagSeguro
 
-> **{:body => {:error => {:message}}}**: Mensagem com o error
+`{:body {:error => {:message}}}`: Mensagem com o error
 </br>
 
 ___
