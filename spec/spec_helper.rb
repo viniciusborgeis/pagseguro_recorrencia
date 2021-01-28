@@ -6,6 +6,8 @@ SimpleCov.start do
   add_filter 'lib/pagseguro_recorrencia/version.rb'
   track_files '{lib}/**/*.rb'
 end
+require 'shields_badge'
+SimpleCov.formatter = SimpleCov::Formatter::ShieldsBadge
 
 require 'pagseguro_recorrencia'
 require 'webmock/rspec'
