@@ -72,9 +72,14 @@ ___
 
 ## Documentação
 
-como mostrado na sessão acima, as chamadas a api do PagSeguro são feitas através de metodos público da nossa GEM, abaixo listarei as chamadas dos métodos e explicarei cada campo setados nos **payloads**.
+como mostrado na sessão acima, as chamadas a api do PagSeguro são feitas através de metodos público da nossa GEM, abaixo listarei as chamadas dos métodos e explicarei cada campo setados nos requests que precisam dos **payloads**.
 
-### Criando novo Plano
+- [Criando novo Plano](#criando-novo-plano)
+   - [Explicando Payload](#explicando-payload-campos-com--são-obriatórios)
+ - [Criando nova Sessão](#criando-nova-sessão)
+
+___
+## **CRIANDO NOVO PLANO**
 
 Para criar um novo plano, sete um payload com os dados necessários faça a chamada do método `PagseguroRecorrencia.new_plan(payload)`
 
@@ -97,7 +102,8 @@ payload = {
 ```
 </br>
 
-**PAYLOAD** *campos com * são obriatórios*
+### **EXPLICANDO PAYLOAD** *campos com * são obriatórios*
+</br>
 
 `*plan_name:string` - Nome do plano a ser criado
 
@@ -175,6 +181,40 @@ payload = {
 
 `{:body {:error => {:message}}}`: Mensagem com o error
 </br>
+</br>
+
+## **CRIANDO NOVA SESSÃO**
+Para criar ua nova sessão e retornar o SessionID do PagSeguro, basta fazer a chamada do método `PagseguroRecorrencia.new_session` *os dados da sessão vem do initializer que criamos*
+
+```ruby
+@return_data = PagseguroRecorrencia.new_session
+```
+</br>
+
+**Retorno com sucesso**
+
+```ruby
+{
+  :code=>"200",
+  :message=>"OK",
+  :body=> {
+    :session=> {
+      :id=>"b193453ff3e44371a9780113825cedf7"
+    }
+  }
+}
+```
+</br>
+
+**Retorno com Dados Inválidos**
+
+```ruby
+{
+  :code=>"401", 
+  :message=>"Unauthorized",
+  :body=>"Unauthorized"
+}
+```
 
 ___
 
