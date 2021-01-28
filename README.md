@@ -1,5 +1,10 @@
 # PagseguroRecorrencia
 
+
+## <center> :warning: WIP :warning: </center>
+### <center> Em desenvolvimento! </center>
+</br>
+
 Implementação criada para facilitar a integração com o modo de recorrência do PagSeguro utilizando Ruby on Rails.
 Com a GEM se torna fácil fazer as requisições para a API do pagseguro, bastando apenas chamar um método passando um payload com os dados necessário e aguardar a resposta da API do PagSeguro
 
