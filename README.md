@@ -1,5 +1,5 @@
 # PagseguroRecorrencia
-[![Coverage](https://viniciusborgeis.github.io/pagseguro_recorrencia/badge.svg)](https://github.com/viniciusborgeis/pagseguro_recorrencia)
+[![Coverage](badge.svg)](https://github.com/viniciusborgeis/pagseguro_recorrencia)
 
 
 ## <center> :warning: WIP :warning: </center>
