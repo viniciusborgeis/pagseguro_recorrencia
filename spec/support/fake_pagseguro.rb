@@ -23,6 +23,19 @@ class FakePagseguro < Sinatra::Base
     xml_response response_status, file
   end
 
+  post '/v2/sessions' do
+    file = nil
+    response_status = nil
+    if request.params["email"] == 'wrong@wrong.com'
+      file = 'new_session_wrong_credentials.xml' 
+      response_status = 401
+    else
+      file = 'new_session_success.xml' 
+      response_status = 200
+    end
+    xml_response response_status, file
+  end
+
   private
 
   def xml_response(response_code, file_name)

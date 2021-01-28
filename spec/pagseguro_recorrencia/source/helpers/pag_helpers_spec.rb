@@ -14,7 +14,7 @@ RSpec.describe PagseguroRecorrencia::Helpers do
       end
   
   
-      builded_url = PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration)
+      builded_url = PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_plan)
       environment_string = builded_url.content_around('ws', 'pagseguro')
       expect(builded_url.class).to eq(String)
       expect(builded_url).to eq('https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request?email=test@test.com&token=5A9045945CD85239E8F8BDF34532DBA460')
@@ -30,7 +30,7 @@ RSpec.describe PagseguroRecorrencia::Helpers do
         config.cancel_url = nil
       end
   
-      builded_url = PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration)
+      builded_url = PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_plan)
       environment_string = builded_url.content_around('ws', 'pagseguro')
       expect(builded_url.class).to eq(String)
       expect(builded_url).to eq('https://ws.pagseguro.uol.com.br/pre-approvals/request?email=test@test.com&token=5A9045945CD85239E8F8BDF34532DBA460')
@@ -46,7 +46,7 @@ RSpec.describe PagseguroRecorrencia::Helpers do
         config.cancel_url = nil
       end
   
-      expect { PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration) }
+      expect { PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_plan) }
         .to raise_error(StandardError, '[WRONG_ENVIRONMENT] environment: receive only (:sandbox :production), you pass :wrog_environment')     
     end
   end
@@ -148,11 +148,23 @@ RSpec.describe PagseguroRecorrencia::Helpers do
     end
 
     it 'pass incorrect payload data' do
-      payload = [ "asd", 123]
+      payload = ["asd", 123]
 
       required_params = %i[ plan_name charge_type amount_per_payment ]
       expect { PagseguroRecorrencia::Helpers.check_required_payload_presencies(payload, required_params) }.to raise_error(RuntimeError)
     end
+  end
+
+  it 'when call request_types() method passing :new_plan' do
+    result = PagseguroRecorrencia::Helpers.request_types(:new_plan)
+    expect(result.class).to eq(String)
+    expect(result).to eq('/pre-approvals/request?')
+  end
+
+  it 'when call request_types() method passing :new_session' do
+    result = PagseguroRecorrencia::Helpers.request_types(:new_session)
+    expect(result.class).to eq(String)
+    expect(result).to eq('/v2/sessions?')
   end
 
   

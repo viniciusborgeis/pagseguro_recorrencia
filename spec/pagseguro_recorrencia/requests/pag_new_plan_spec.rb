@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'support/helpers/helper'
-require 'support/stubs_data/new_plan'
 
 RSpec.describe PagseguroRecorrencia::PagRequests::NewPlan do
 

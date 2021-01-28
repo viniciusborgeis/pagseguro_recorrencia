@@ -7,7 +7,10 @@ SimpleCov.start do
   track_files '{lib}/**/*.rb'
 end
 require 'shields_badge'
-SimpleCov.formatter = SimpleCov::Formatter::ShieldsBadge
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+  SimpleCov::Formatter::HTMLFormatter,
+  SimpleCov::Formatter::ShieldsBadge
+])
 
 require 'pagseguro_recorrencia'
 require 'webmock/rspec'
