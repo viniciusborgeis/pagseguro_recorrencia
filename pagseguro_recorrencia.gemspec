@@ -27,11 +27,12 @@ Gem::Specification.new do |spec|
     'lib/pagseguro_recorrencia/configuration.rb',
     'lib/pagseguro_recorrencia/source/core/pag_core.rb',
     'lib/pagseguro_recorrencia/source/helpers/pag_helpers.rb',
-    'lib/pagseguro_recorrencia/source/helpers/pag_load_file.rb',
     'lib/pagseguro_recorrencia/source/requests/pag_new_plan.rb',
     'lib/pagseguro_recorrencia/source/requests/bodies/body_new_plan.rb'
   )
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
+  spec.add_dependency('activesupport', '~> 4.2', '>= 4.2.6')
+  spec.add_dependency('json', '2.3.0')
 end

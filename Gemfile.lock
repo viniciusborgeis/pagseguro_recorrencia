@@ -2,6 +2,8 @@ PATH
   remote: .
   specs:
     pagseguro_recorrencia (0.1.0)
+      activesupport (~> 4.2, >= 4.2.6)
+      json (= 2.3.0)
 
 GEM
   remote: https://rubygems.org/
