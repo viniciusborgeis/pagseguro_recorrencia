@@ -17,6 +17,7 @@ end
 group :test do
   gem 'rspec', '~> 3.0'
   gem 'sinatra', '~> 1.4', '>= 1.4.7'
-  gem 'simplecov', '~> 0.12.0'
+  gem 'simplecov', require: false
+  gem 'simplecov-shields-badge', require: false
   gem 'webmock', '~> 2.1'
 end
