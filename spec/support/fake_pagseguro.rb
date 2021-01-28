@@ -1,10 +1,5 @@
 require 'sinatra/base'
-
-class String
-  def content_around(marker1, marker2)
-    self[/#{Regexp.escape(marker1)}(.*?)#{Regexp.escape(marker2)}/m, 1]
-  end
-end
+require_relative 'helpers/helper'
 
 class FakePagseguro < Sinatra::Base
   post '/pre-approvals/request' do

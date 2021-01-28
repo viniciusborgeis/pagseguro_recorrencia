@@ -89,94 +89,100 @@ require 'uri'
 require 'net/http'
 require 'pagseguro_recorrencia/source/core/pag_core'
 require 'pagseguro_recorrencia/source/requests/bodies/body_new_plan'
+require 'pagseguro_recorrencia/source/helpers/pag_helpers'
 
-module PagRequests
-  class NewPlan
-    include PagseguroRecorrencia
+module PagseguroRecorrencia
+  module PagRequests
+    class NewPlan < PagCore
+      
+      def create(payload)
+        PagseguroRecorrencia::Helpers.check_required_payload_presencies(payload, required_params)
+        replaced_payload = replace_sensitive_field_with_present(payload)
+        body = build_body_xml(replaced_payload)
+        do_request(body)
+      end
 
-    def create(payload)
-      check_required_payload_presencies(payload, required_params)
-      replaced_payload = replace_sensitive_field_with_present(payload)
-      body = build_body_xml(replaced_payload)
-      do_request(body)
-    end
+      private
 
-    private
+      def do_request(body)
+        url = URI(PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration))
 
-    def do_request(body)
-      url = URI(build_environment_url(PagseguroRecorrencia.configuration))
+        https = Net::HTTP.new(url.host, url.port)
+        https.use_ssl = true
 
-      https = Net::HTTP.new(url.host, url.port)
-      https.use_ssl = true
+        request = Net::HTTP::Post.new(url)
+        request['Accept'] = 'application/vnd.pagseguro.com.br.v3+xml;charset=ISO-8859-1'
+        request['Content-Type'] = 'application/xml;charset=ISO-8859-1'
+        request.body = body
 
-      request = Net::HTTP::Post.new(url)
-      request['Accept'] = 'application/vnd.pagseguro.com.br.v3+xml;charset=ISO-8859-1'
-      request['Content-Type'] = 'application/xml;charset=ISO-8859-1'
-      request.body = body
-
-      response = https.request(request)
-
-      3.times do |_i|
         response = https.request(request)
-        break if response.code != '404'
+
+        3.times do |_i|
+          response = https.request(request)
+          break if response.code != '404'
+        end
+
+        parse_response(response)
       end
 
-      parse_response(response)
-    end
+      def parse_response(response)
+        response_code = response.code
+        response_msg = response.msg
+        if response_code == '200'
+          response_body = PagseguroRecorrencia::Helpers.parse_xml_to_hash(response.read_body)[:preApprovalRequest]
+        end
+        if response_code == '400'
+          response_body = PagseguroRecorrencia::Helpers.parse_xml_to_hash(response.read_body)[:errors]
+        end
+        response_body = PagseguroRecorrencia::Helpers.parse_xml_to_hash(response.read_body) unless %w[200 400]
 
-    def parse_response(response)
-      response_code = response.code
-      response_msg = response.msg
-      response_body = parse_xml_to_hash(response.read_body)[:preApprovalRequest] if response_code == '200'
-      response_body = parse_xml_to_hash(response.read_body)[:errors] if response_code == '400'
-      response_body = parse_xml_to_hash(response.read_body) unless %w[200 400]
-
-      {
-        code: response_code,
-        message: response_msg,
-        body: response_body
-      }
-    end
-
-    def replace_sensitive_field_with_present(payload)
-      replaced_payload = check_sensitive_value(payload, :charge_type, charge_type_values)
-      replaced_payload = check_sensitive_value(replaced_payload, :period, period_values)
-      check_sensitive_value(replaced_payload, :expiration_unit, expiration_unit_values)
-    end
-
-    def check_sensitive_value(payload, key, params)
-      return unless payload.key?(key)
-
-      tmp_payload = payload.dup
-
-      params.map { |value| tmp_payload[key] = value.to_s.upcase if payload[key].to_sym == value }
-      if tmp_payload[key] == payload[key]
-        raise "[VALUE_ERROR] :#{key} can only receive these values (#{params.map do |v|
-                                                                        ':' + v.to_s
-                                                                      end.join(', ')})"
+        {
+          code: response_code,
+          message: response_msg,
+          body: response_body
+        }
       end
 
-      tmp_payload
-    end
+      def replace_sensitive_field_with_present(payload)
+        replaced_payload = check_sensitive_value(payload, :charge_type, charge_type_values)
+        replaced_payload = check_sensitive_value(replaced_payload, :period, period_values)
+        check_sensitive_value(replaced_payload, :expiration_unit, expiration_unit_values)
+      end
 
-    def required_params
-      %i[
-        plan_name
-        charge_type
-        amount_per_payment
-      ]
-    end
+      def check_sensitive_value(payload, key, params)
+        return unless payload.key?(key)
 
-    def charge_type_values
-      %i[manual auto]
-    end
+        tmp_payload = payload.dup
 
-    def period_values
-      %i[weekly monthly bimonthly trimonthly semiannually yearly]
-    end
+        params.map { |value| tmp_payload[key] = value.to_s.upcase if payload[key].to_sym == value }
+        if tmp_payload[key] == payload[key]
+          raise "[VALUE_ERROR] :#{key} can only receive these values (#{params.map do |v|
+                                                                          ':' + v.to_s
+                                                                        end.join(', ')})"
+        end
 
-    def expiration_unit_values
-      %i[days months years]
+        tmp_payload
+      end
+
+      def required_params
+        %i[
+          plan_name
+          charge_type
+          amount_per_payment
+        ]
+      end
+
+      def charge_type_values
+        %i[manual auto]
+      end
+
+      def period_values
+        %i[weekly monthly bimonthly trimonthly semiannually yearly]
+      end
+
+      def expiration_unit_values
+        %i[days months years]
+      end
     end
   end
 end

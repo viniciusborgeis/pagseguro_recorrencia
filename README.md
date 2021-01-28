@@ -29,7 +29,7 @@ Dentro da sua aplicação Rails crie um initializer chamado `pagseguro_recorrenc
 ```ruby
 # config/initializers/pagseguro_recorrencia.rb
 
-PagseguroRecorrencia.configure do |config|
+PagseguroRecorrencia::PagCore.configure do |config|
   config.credential_email = 'EMAIL_DO_PAGSEGURO'
   config.credential_token = 'TOKEN_DO_PAGSEGURO'
   config.environment = :sandbox # :sandbox ou :production

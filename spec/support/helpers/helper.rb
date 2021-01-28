@@ -5,3 +5,9 @@ def valid_date?(date)
 rescue ArgumentError
   false
 end
+
+class String
+  def content_around(marker1, marker2)
+    self[/#{Regexp.escape(marker1)}(.*?)#{Regexp.escape(marker2)}/m, 1]
+  end
+end

@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'activesupport', '~> 4.2', '>= 4.2.6'
-gem 'json', '~> 1.8', '>= 1.8.3'
+gem 'json', '2.3.0'
 gem 'rake', '~> 12.0'
 
 group :development do
