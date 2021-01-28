@@ -105,7 +105,7 @@ module PagseguroRecorrencia
       private
 
       def do_request(body)
-        url = URI(PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration))
+        url = URI(PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_plan))
 
         https = Net::HTTP.new(url.host, url.port)
         https.use_ssl = true
