@@ -7,11 +7,14 @@ module PagseguroRecorrencia
   module PagRequests
     class NewSession < RequestApplication
       def create
-        url = build_environment_url(PagseguroRecorrencia::PagCore.configuration,:new_session)
+        url = build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_session)
         header_content_type = 'application/x-www-form-urlencoded'
         https, request = build_https_request(url, :post, header_content_type).values_at(:https, :request)
         response = request_safe(https, request)
-        define_session_id(response[:body][:session][:id]) if response[:body].key?(:session)
+        
+        if !response[:body].is_a?(String) && response[:body].key?(:session)
+          define_session_id(response[:body][:session][:id])
+        end
 
         response
       end
@@ -32,9 +35,14 @@ module PagseguroRecorrencia
       def parse_response(response)
         response_code = response.code
         response_msg = response.msg
-        response_body = parse_xml_to_hash(response.read_body) if response_code == status_code.ok
-        response_body = response.read_body if response_code == status_code.unauthorized
-        response_body = parse_xml_to_hash(response.read_body) unless response_code == status_code.ok || response_code == status_code.bad_request
+
+        if response_code == status_code.ok
+          response_body = parse_xml_to_hash(response.read_body)
+        elsif response_code == status_code.unauthorized
+          response_body = response.read_body
+        else
+          response_body = parse_xml_to_hash(response.read_body)
+        end
 
         {
           code: response_code,
