@@ -22,6 +22,7 @@ WebMock.disable_net_connect!(allow_localhost: true)
 RSpec.configure do |config|
   config.before(:each) do
     stub_request(:any, /ws.sandbox.pagseguro.uol.com.br/).to_rack(FakePagseguro)
+    stub_request(:any, /df.uol.com.br/).to_rack(FakePagseguro)
   end
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = '.rspec_status'

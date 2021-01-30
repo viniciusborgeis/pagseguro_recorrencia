@@ -1,44 +1,42 @@
-
 require 'uri'
 require 'net/http'
 require 'pagseguro_recorrencia/source/core/pag_core'
-require 'pagseguro_recorrencia/source/helpers/pag_helpers'
+require 'pagseguro_recorrencia/source/requests/request_application'
 
 module PagseguroRecorrencia
   module PagRequests
-    class NewSession < PagCore
-
+    class NewSession < RequestApplication
       def create
-        url = URI(PagseguroRecorrencia::Helpers.build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_session))
+        url = build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_session)
+        header_content_type = 'application/x-www-form-urlencoded'
+        https, request = build_https_request(url, :post, header_content_type).values_at(:https, :request)
+        response = request_safe(https, request)
+        
+        if !response[:body].is_a?(String) && response[:body].key?(:session)
+          define_session_id(response[:body][:session][:id])
+        end
 
-        https = Net::HTTP.new(url.host, url.port)
-        https.use_ssl = true
+        response
+      end
 
-        request = Net::HTTP::Post.new(url)
-        request["Content-Type"] = "application/x-www-form-urlencoded"
+      private
 
+      def request_safe(https, request)
         response = https.request(request)
 
         3.times do |_i|
           response = https.request(request)
-          break if response.code != '404'
+          break if response.code != status_code.not_found
         end
 
         parse_response(response)
       end
 
-      private
-
       def parse_response(response)
         response_code = response.code
         response_msg = response.msg
-        if response_code == '200'
-          response_body = PagseguroRecorrencia::Helpers.parse_xml_to_hash(response.read_body)
-        end
-        if response_code == '401'
-          response_body = response.read_body
-        end
-        response_body = PagseguroRecorrencia::Helpers.parse_xml_to_hash(response.read_body) unless %w[200 400]
+        response_body = response.read_body
+        response_body = parse_xml_to_hash(response.read_body) if response_code != status_code.unauthorized
 
         {
           code: response_code,
@@ -46,7 +44,6 @@ module PagseguroRecorrencia
           body: response_body
         }
       end
-      
     end
   end
 end

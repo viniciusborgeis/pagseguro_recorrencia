@@ -3,6 +3,7 @@ require 'support/helpers/helper'
 
 RSpec.describe PagseguroRecorrencia::PagCore do
   it 'when call configuration() method without set configuration befored' do
+    PagseguroRecorrencia::PagCore.reset
     result = PagseguroRecorrencia::PagCore.configuration
     expect(result.class).to eq(PagseguroRecorrencia::Configuration)
     expect(result.credential_email).to be_nil

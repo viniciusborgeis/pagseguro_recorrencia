@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<errors>
+    <error>
+        <code>30400</code>
+        <message>invalid creditcard data</message>
+    </error>
+</errors>
