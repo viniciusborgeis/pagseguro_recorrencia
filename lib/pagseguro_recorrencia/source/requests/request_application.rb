@@ -76,7 +76,8 @@ module PagseguroRecorrencia
       end
 
       def parse_json_to_hash(json)
-        JSON.parse(json, { symbolize_names: true })
+        hash = JSON.parse(json, { symbolize_names: true })
+        hash.deep_transform_keys { |key| key.to_s.underscore.to_sym }
       end
     end
   end

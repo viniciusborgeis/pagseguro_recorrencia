@@ -1,0 +1,15 @@
+{
+  "bin": {
+      "length": null,
+      "country": null,
+      "bin": null,
+      "brand": null,
+      "cardLevel": null,
+      "cvvSize": null,
+      "expirable": null,
+      "validationAlgorithm": null,
+      "bank": null,
+      "statusMessage": "Error",
+      "reasonMessage": "Bin not found"
+  }
+}

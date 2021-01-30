@@ -57,14 +57,14 @@ RSpec.describe PagseguroRecorrencia::PagRequests::RequestApplication do
       xml_parsed = PagseguroRecorrencia::PagRequests::RequestApplication.new.parse_xml_to_hash(xml)
       
       expect(xml_parsed.class).to eq(Hash)
-      expect(xml_parsed.key?(:preApprovalRequest)).to be_truthy
-      expect(xml_parsed[:preApprovalRequest].key?(:preApproval)).to be_truthy
-      expect(xml_parsed[:preApprovalRequest][:preApproval].key?(:name)).to be_truthy
+      expect(xml_parsed.key?(:pre_approval_request)).to be_truthy
+      expect(xml_parsed[:pre_approval_request].key?(:pre_approval)).to be_truthy
+      expect(xml_parsed[:pre_approval_request][:pre_approval].key?(:name)).to be_truthy
 
-      expect(xml_parsed[:preApprovalRequest].class).to eq(Hash)
-      expect(xml_parsed[:preApprovalRequest][:preApproval].class).to eq(Hash)
-      expect(xml_parsed[:preApprovalRequest][:preApproval][:name].class).to eq(String)
-      expect(xml_parsed[:preApprovalRequest][:preApproval][:name]).to eq('TEST - 1')
+      expect(xml_parsed[:pre_approval_request].class).to eq(Hash)
+      expect(xml_parsed[:pre_approval_request][:pre_approval].class).to eq(Hash)
+      expect(xml_parsed[:pre_approval_request][:pre_approval][:name].class).to eq(String)
+      expect(xml_parsed[:pre_approval_request][:pre_approval][:name]).to eq('TEST - 1')
     end
 
     it 'pass wrong XML data missing close tag </name> and return raise' do

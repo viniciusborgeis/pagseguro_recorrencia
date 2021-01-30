@@ -1,13 +1,16 @@
 require 'uri'
 require 'net/http'
-require 'pagseguro_recorrencia/source/core/pag_core'
-require 'pagseguro_recorrencia/source/requests/bodies/body_new_card_token'
+require 'pagseguro_recorrencia/source/requests/request_application'
+require 'pagseguro_recorrencia/source/requests/bodies/bodies'
 
 module PagseguroRecorrencia
   module PagRequests
     class GetCardBrand < RequestApplication
       def receive(card_bin)
-        url = "https://df.uol.com.br/df-fe/mvc/creditcard/v1/getBin?tk=#{PagseguroRecorrencia::PagCore.configuration.session_id}&creditCard=#{card_bin}"
+        payload = Hash.new
+        payload[:session_id] = PagseguroRecorrencia::PagCore.configuration.session_id
+        payload[:card_bin] = card_bin
+        url =  PagseguroRecorrencia::PagRequests::Bodies.build_get_card_brand(payload)
 
         https, request = build_https_request(url, :get).values_at(:https, :request)
         response = request_safe(https, request)
@@ -31,7 +34,7 @@ module PagseguroRecorrencia
 
       def check_session_id(response)
         recall = false
-        if response[:body].key?(:safeCheckoutResponse)
+        if response[:body].key?(:safe_checkout_response)
           PagseguroRecorrencia.new_session
           recall = true
         end
@@ -42,6 +45,12 @@ module PagseguroRecorrencia
         response_code = response.code
         response_msg = response.msg
         response_body = parse_json_to_hash(response.read_body)
+        if response_body.key?(:bin) && response_body[:bin][:status_message] == 'Error'
+          hash = Hash.new
+          hash[:status_message] = response_body[:bin][:status_message]
+          hash[:reason_message] = response_body[:bin][:reason_message]
+          response_body = hash
+        end
 
         {
           code: response_code,

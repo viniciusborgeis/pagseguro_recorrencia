@@ -1,8 +1,7 @@
 require 'uri'
 require 'net/http'
-require 'pagseguro_recorrencia/source/core/pag_core'
-require 'pagseguro_recorrencia/source/requests/bodies/body_new_plan'
 require 'pagseguro_recorrencia/source/requests/request_application'
+require 'pagseguro_recorrencia/source/requests/bodies/bodies'
 
 module PagseguroRecorrencia
   module PagRequests
@@ -10,7 +9,7 @@ module PagseguroRecorrencia
       def create(payload)
         check_required_payload_presencies(payload, required_params)
         replaced_payload = replace_sensitive_field_with_present(payload)
-        body = build_body_xml(replaced_payload)
+        body = PagseguroRecorrencia::PagRequests::XmlBodies.build_new_plan_xml(replaced_payload)
         do_request(body)
       end
 
@@ -41,7 +40,7 @@ module PagseguroRecorrencia
         response_code = response.code
         response_msg = response.msg
         if response_code == status_code.ok
-          response_body = parse_xml_to_hash(response.read_body)[:preApprovalRequest]
+          response_body = parse_xml_to_hash(response.read_body)[:pre_approval_request]
         elsif response_code == status_code.bad_request
           response_body = parse_xml_to_hash(response.read_body)[:errors]
         end

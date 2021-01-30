@@ -35,14 +35,8 @@ module PagseguroRecorrencia
       def parse_response(response)
         response_code = response.code
         response_msg = response.msg
-
-        if response_code == status_code.ok
-          response_body = parse_xml_to_hash(response.read_body)
-        elsif response_code == status_code.unauthorized
-          response_body = response.read_body
-        else
-          response_body = parse_xml_to_hash(response.read_body)
-        end
+        response_body = response.read_body
+        response_body = parse_xml_to_hash(response.read_body) if response_code != status_code.unauthorized
 
         {
           code: response_code,

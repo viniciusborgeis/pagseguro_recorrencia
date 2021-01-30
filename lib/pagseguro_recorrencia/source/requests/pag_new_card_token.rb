@@ -1,8 +1,8 @@
 require 'uri'
 require 'net/http'
-require 'pagseguro_recorrencia/source/core/pag_core'
-require 'pagseguro_recorrencia/source/requests/bodies/body_new_card_token'
 require 'pagseguro_recorrencia/source/requests/request_application'
+require 'pagseguro_recorrencia/source/requests/bodies/bodies'
+
 
 module PagseguroRecorrencia
   module PagRequests
@@ -13,7 +13,7 @@ module PagseguroRecorrencia
         payload[:session_id] = PagseguroRecorrencia::PagCore.configuration.session_id
 
         https, request = build_https_request(url, :post, content_type).values_at(:https, :request)
-        request.body = build_body(payload)
+        request.body = PagseguroRecorrencia::PagRequests::Bodies.build_new_card_token(payload)
         response = request_safe(https, request)
         return create(payload) if check_session_id(response)
 

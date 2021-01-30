@@ -1,0 +1,22 @@
+{
+  "bin": {
+      "length": null,
+      "country": {
+          "name": "Brazil",
+          "id": 76,
+          "isoCode": "BR",
+          "isoCodeThreeDigits": "BRA"
+      },
+      "bin": 411111,
+      "brand": {
+          "name": "visa"
+      },
+      "cardLevel": null,
+      "cvvSize": 3,
+      "expirable": "n",
+      "validationAlgorithm": "LUHN",
+      "bank": null,
+      "statusMessage": "Success",
+      "reasonMessage": null
+  }
+}

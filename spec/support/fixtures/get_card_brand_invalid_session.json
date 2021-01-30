@@ -1,0 +1,10 @@
+{
+  "safeCheckoutResponse": {
+      "status": "invalid_session",
+      "code": "30404",
+      "message": "Session not found",
+      "result": null,
+      "statusMessage": "Not Found",
+      "reasonMessage": "Sessao nao encontrada no armazenamento"
+  }
+}
