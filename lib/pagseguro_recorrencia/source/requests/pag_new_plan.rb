@@ -1,15 +1,15 @@
 require 'uri'
 require 'net/http'
 require 'pagseguro_recorrencia/source/requests/request_application'
-require 'pagseguro_recorrencia/source/requests/bodies/bodies'
+require 'pagseguro_recorrencia/source/builds/build_xml'
 
 module PagseguroRecorrencia
   module PagRequests
     class NewPlan < RequestApplication
       def create(payload)
         check_required_payload_presencies(payload, required_params)
-        replaced_payload = replace_sensitive_field_with_present(payload)
-        body = PagseguroRecorrencia::PagRequests::XmlBodies.build_new_plan_xml(replaced_payload)
+        replaced_payload = replace_sensitive_field_with_present(payload)        
+        body = PagseguroRecorrencia::Builds::XML.new_plan(replaced_payload)
         do_request(body)
       end
 
@@ -29,8 +29,9 @@ module PagseguroRecorrencia
         response = https.request(request)
 
         3.times do |_i|
-          response = https.request(request)
           break if response.code != status_code.not_found
+
+          response = https.request(request)
         end
 
         parse_response(response)
@@ -60,15 +61,15 @@ module PagseguroRecorrencia
       end
 
       def check_sensitive_value(payload, key, params)
-        return unless payload.key?(key)
+        return payload unless payload.key?(key)
 
         tmp_payload = payload.dup
 
         params.map { |value| tmp_payload[key] = value.to_s.upcase if payload[key].to_sym == value }
         if tmp_payload[key] == payload[key]
-          raise "[VALUE_ERROR] :#{key} can only receive these values (#{params.map do |v|
-                                                                          ':' + v.to_s
-                                                                        end.join(', ')})"
+          received_params = params.map { |param| ":#{param}" }.join(', ')
+          raise_message = "[VALUE_ERROR] :#{key} can only receive these values (#{received_params})"
+          raise raise_message
         end
 
         tmp_payload

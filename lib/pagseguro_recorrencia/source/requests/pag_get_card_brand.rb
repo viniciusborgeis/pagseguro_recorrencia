@@ -1,7 +1,7 @@
 require 'uri'
 require 'net/http'
 require 'pagseguro_recorrencia/source/requests/request_application'
-require 'pagseguro_recorrencia/source/requests/bodies/bodies'
+require 'pagseguro_recorrencia/source/builds/build_url_param'
 
 module PagseguroRecorrencia
   module PagRequests
@@ -10,7 +10,7 @@ module PagseguroRecorrencia
         payload = Hash.new
         payload[:session_id] = PagseguroRecorrencia::PagCore.configuration.session_id
         payload[:card_bin] = card_bin
-        url =  PagseguroRecorrencia::PagRequests::Bodies.build_get_card_brand(payload)
+        url =  PagseguroRecorrencia::Builds::UrlParam.get_card_brand(payload)
 
         https, request = build_https_request(url, :get).values_at(:https, :request)
         response = request_safe(https, request)
@@ -25,8 +25,8 @@ module PagseguroRecorrencia
         response = https.request(request)
 
         3.times do |_i|
-          response = https.request(request)
           break if response.code != status_code.not_found
+          response = https.request(request)
         end
 
         parse_response(response)
@@ -34,7 +34,7 @@ module PagseguroRecorrencia
 
       def check_session_id(response)
         recall = false
-        if response[:body].key?(:safe_checkout_response)
+        if !response[:body].nil? && response[:body].key?(:safe_checkout_response)
           PagseguroRecorrencia.new_session
           recall = true
         end
@@ -44,12 +44,15 @@ module PagseguroRecorrencia
       def parse_response(response)
         response_code = response.code
         response_msg = response.msg
-        response_body = parse_json_to_hash(response.read_body)
-        if response_body.key?(:bin) && response_body[:bin][:status_message] == 'Error'
-          hash = Hash.new
-          hash[:status_message] = response_body[:bin][:status_message]
-          hash[:reason_message] = response_body[:bin][:reason_message]
-          response_body = hash
+        response_body = nil
+        if response_code != status_code.not_found
+          response_body = parse_json_to_hash(response.read_body) 
+          if response_body.key?(:bin) && response_body[:bin][:status_message] == 'Error'
+            hash = Hash.new
+            hash[:status_message] = response_body[:bin][:status_message]
+            hash[:reason_message] = response_body[:bin][:reason_message]
+            response_body = hash
+          end
         end
 
         {

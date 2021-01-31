@@ -35,5 +35,25 @@ RSpec.describe PagseguroRecorrencia do
       expect(response[:message]).to eq("Unauthorized");
       expect(response[:body]).to eq("Unauthorized");
     end
+
+    it 'when request return 404 not found' do
+      PagseguroRecorrencia::PagCore.reset
+      PagseguroRecorrencia::PagCore.configure do |config|
+        config.credential_email = '404'
+        config.credential_token = '5A9045945CD85239E8F8BDF34532DBA460'
+        config.environment = :sandbox
+        config.cancel_url = nil
+      end
+      response = PagseguroRecorrencia.new_session
+      
+      expect(response.class).to eq(Hash)
+      expect(response.key?(:code)).to be_truthy
+      expect(response.key?(:message)).to be_truthy
+      expect(response.key?(:body)).to be_truthy
+
+      expect(response[:code]).to eq('404')
+      expect(response[:message]).to eq('Not Found')
+      expect(response[:body]).to be_nil
+    end
   end
 end

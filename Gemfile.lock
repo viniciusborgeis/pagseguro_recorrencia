@@ -4,6 +4,7 @@ PATH
     pagseguro_recorrencia (0.1.0)
       activesupport (~> 4.2, >= 4.2.6)
       json (= 2.3.0)
+      nokogiri (~> 1.6, >= 1.6.8)
       ruby-enum (~> 0.8.0)
 
 GEM
@@ -31,6 +32,8 @@ GEM
     json (2.3.0)
     method_source (1.0.0)
     minitest (5.14.3)
+    nokogiri (1.11.1-x64-mingw32)
+      racc (~> 1.4)
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
@@ -41,6 +44,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     public_suffix (4.0.6)
+    racc (1.5.2)
     rack (1.6.13)
     rack-protection (1.5.5)
       rack
@@ -104,6 +108,7 @@ DEPENDENCIES
   activesupport (~> 4.2, >= 4.2.6)
   bigdecimal (~> 1.2, >= 1.2.7)
   json (= 2.3.0)
+  nokogiri (~> 1.6, >= 1.6.8)
   pagseguro_recorrencia!
   pry-byebug (~> 3.4)
   rake (~> 12.0)
