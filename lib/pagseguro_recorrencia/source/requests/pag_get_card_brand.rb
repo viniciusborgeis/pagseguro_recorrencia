@@ -7,30 +7,23 @@ module PagseguroRecorrencia
   module PagRequests
     class GetCardBrand < RequestApplication
       def receive(card_bin)
-        payload = Hash.new
-        payload[:session_id] = PagseguroRecorrencia::PagCore.configuration.session_id
-        payload[:card_bin] = card_bin
-        url =  PagseguroRecorrencia::Builds::UrlParam.get_card_brand(payload)
+        params = {
+          session_id: PagseguroRecorrencia::PagCore.configuration.session_id,
+          card_bin: card_bin
+        }
+        url = url_credit_card(params, :get_card_brand)
 
-        https, request = build_https_request(url, :get).values_at(:https, :request)
+        https, request = request_https(url, :get).values_at(:https, :request)
+
         response = request_safe(https, request)
-        return receive(card_bin) if check_session_id(response)
+        parsed_response = parse_response(response)
 
-        response
+        return receive(card_bin) if check_session_id(parsed_response)
+
+        parsed_response
       end
 
       private
-
-      def request_safe(https, request)
-        response = https.request(request)
-
-        3.times do |_i|
-          break if response.code != status_code.not_found
-          response = https.request(request)
-        end
-
-        parse_response(response)
-      end
 
       def check_session_id(response)
         recall = false
@@ -45,7 +38,7 @@ module PagseguroRecorrencia
         response_code = response.code
         response_msg = response.msg
         response_body = nil
-        if response_code != status_code.not_found
+        if response_code != STATUS_CODE.not_found
           response_body = parse_json_to_hash(response.read_body) 
           if response_body.key?(:bin) && response_body[:bin][:status_message] == 'Error'
             hash = Hash.new

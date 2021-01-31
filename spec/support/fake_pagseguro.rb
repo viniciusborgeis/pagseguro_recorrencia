@@ -31,6 +31,10 @@ class FakePagseguro < Sinatra::Base
       file = '404.html'
       response_status = 404
       return_type = :html
+    elsif req_body.content_around('<name>', '</name>') == '500'
+      file = '500.html'
+      response_status = 500
+      return_type = :html
     else
       file = 'new_plan_success.xml'
       response_status = 200

@@ -3,7 +3,7 @@ require 'support/helpers/helper'
 
 RSpec.describe PagseguroRecorrencia::PagRequests::RequestApplication do
 
-  context 'when call build_environment_url() method' do
+  context 'when call url_environment() method' do
     it 'passing sandbox configuration(:sandbox) and return sandbox URL' do
       PagseguroRecorrencia::PagCore.reset
       PagseguroRecorrencia::PagCore.configure do |config|
@@ -14,7 +14,7 @@ RSpec.describe PagseguroRecorrencia::PagRequests::RequestApplication do
       end
   
   
-      builded_url = PagseguroRecorrencia::PagRequests::RequestApplication.new.build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_plan)
+      builded_url = PagseguroRecorrencia::PagRequests::RequestApplication.new.url_environment(PagseguroRecorrencia::PagCore.configuration, :new_plan)
       environment_string = builded_url.content_around('ws', 'pagseguro')
       expect(builded_url.class).to eq(String)
       expect(builded_url).to eq('https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request?email=test@test.com&token=5A9045945CD85239E8F8BDF34532DBA460')
@@ -30,7 +30,7 @@ RSpec.describe PagseguroRecorrencia::PagRequests::RequestApplication do
         config.cancel_url = nil
       end
   
-      builded_url = PagseguroRecorrencia::PagRequests::RequestApplication.new.build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_plan)
+      builded_url = PagseguroRecorrencia::PagRequests::RequestApplication.new.url_environment(PagseguroRecorrencia::PagCore.configuration, :new_plan)
       environment_string = builded_url.content_around('ws', 'pagseguro')
       expect(builded_url.class).to eq(String)
       expect(builded_url).to eq('https://ws.pagseguro.uol.com.br/pre-approvals/request?email=test@test.com&token=5A9045945CD85239E8F8BDF34532DBA460')
@@ -46,7 +46,7 @@ RSpec.describe PagseguroRecorrencia::PagRequests::RequestApplication do
         config.cancel_url = nil
       end
   
-      expect { PagseguroRecorrencia::PagRequests::RequestApplication.new.build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_plan) }
+      expect { PagseguroRecorrencia::PagRequests::RequestApplication.new.url_environment(PagseguroRecorrencia::PagCore.configuration, :new_plan) }
         .to raise_error(StandardError, '[WRONG_ENVIRONMENT] environment: receive only (:sandbox :production), you pass :wrog_environment')     
     end
   end
@@ -155,16 +155,43 @@ RSpec.describe PagseguroRecorrencia::PagRequests::RequestApplication do
     end
   end
 
-  it 'when call request_types() method passing :new_plan' do
-    result = PagseguroRecorrencia::PagRequests::RequestApplication.new.request_types(:new_plan)
+  it 'when call request_route() method passing :new_plan' do
+    result = PagseguroRecorrencia::PagRequests::RequestApplication.new.request_route(:new_plan)
     expect(result.class).to eq(String)
     expect(result).to eq('/pre-approvals/request?')
   end
 
-  it 'when call request_types() method passing :new_session' do
-    result = PagseguroRecorrencia::PagRequests::RequestApplication.new.request_types(:new_session)
+  it 'when call request_route() method passing :new_session' do
+    result = PagseguroRecorrencia::PagRequests::RequestApplication.new.request_route(:new_session)
     expect(result.class).to eq(String)
     expect(result).to eq('/v2/sessions?')
+  end
+
+  it 'when call header_content_type() method :form with param' do
+    content_type_header = :form
+    result = PagseguroRecorrencia::Builds::Header.header_content_type(content_type_header)
+    expect(result.class).to eq(String)
+    expect(result).to eq('application/x-www-form-urlencoded')
+  end
+
+  it 'when call header_content_type() method passing format and charset' do
+    content_type_header = {
+      format: 'json',
+      charset: 'UTF-8'
+    }
+    result = PagseguroRecorrencia::Builds::Header.header_content_type(content_type_header)
+    expect(result.class).to eq(String)
+    expect(result).to eq('application/json;charset=UTF-8')
+  end
+
+  it 'when call header_accept() method passing format and charset' do
+    accept_header = {
+      format: 'json',
+      charset: 'UTF-8'
+    }
+    result = PagseguroRecorrencia::Builds::Header.header_accept(accept_header)
+    expect(result.class).to eq(String)
+    expect(result).to eq('application/vnd.pagseguro.com.br.v3+json;charset=UTF-8')
   end
 
   

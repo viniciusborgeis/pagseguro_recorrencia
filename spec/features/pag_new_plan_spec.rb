@@ -80,6 +80,20 @@ RSpec.describe PagseguroRecorrencia do
       expect(response[:body]).to be_nil
     end
 
+    it 'when request return 500 internal server error' do
+      tmp_payload = payload
+      tmp_payload[:plan_name] = '500' # only for sinatra fake_pagseguro match
+      response = PagseguroRecorrencia.new_plan(tmp_payload)
+
+      expect(response.class).to eq(Hash)
+      expect(response.key?(:code)).to be_truthy
+      expect(response.key?(:message)).to be_truthy
+      expect(response.key?(:body)).to be_truthy
+      expect(response[:code]).to eq('500')
+      expect(response[:message]).to eq('Internal Server Error')
+      expect(response[:body]).to eq('ERROR 500 - Internal Server Error')
+    end
+
     it 'when call create() method without set configuration befored' do
       PagseguroRecorrencia::PagCore.reset
       payload = {
