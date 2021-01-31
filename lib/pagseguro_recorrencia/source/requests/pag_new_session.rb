@@ -12,7 +12,7 @@ module PagseguroRecorrencia
         https, request = build_https_request(url, :post, header_content_type).values_at(:https, :request)
         response = request_safe(https, request)
         
-        if !response[:body].is_a?(String) && response[:body].key?(:session)
+        if !response[:body].nil? && !response[:body].is_a?(String) && response[:body].key?(:session)
           define_session_id(response[:body][:session][:id])
         end
 
@@ -25,8 +25,8 @@ module PagseguroRecorrencia
         response = https.request(request)
 
         3.times do |_i|
-          response = https.request(request)
           break if response.code != status_code.not_found
+          response = https.request(request)
         end
 
         parse_response(response)
@@ -35,8 +35,14 @@ module PagseguroRecorrencia
       def parse_response(response)
         response_code = response.code
         response_msg = response.msg
-        response_body = response.read_body
-        response_body = parse_xml_to_hash(response.read_body) if response_code != status_code.unauthorized
+
+        if response_code == status_code.not_found
+          response_body = nil
+        elsif response_code != status_code.unauthorized && response_code != status_code.not_found
+          response_body = parse_xml_to_hash(response.read_body)
+        else
+          response_body = response.read_body
+        end
 
         {
           code: response_code,

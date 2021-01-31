@@ -65,6 +65,21 @@ RSpec.describe PagseguroRecorrencia do
       expect(response[:body][:error][:message]).to eq('preApprovalAmountPerPayment invalid value.')
     end
 
+    it 'when request return 404 not found' do
+      tmp_payload = payload
+      tmp_payload[:plan_name] = '404' # only for sinatra fake_pagseguro match
+      response = PagseguroRecorrencia.new_plan(tmp_payload)
+
+      expect(response.class).to eq(Hash)
+      expect(response.key?(:code)).to be_truthy
+      expect(response.key?(:message)).to be_truthy
+      expect(response.key?(:body)).to be_truthy
+
+      expect(response[:code]).to eq('404')
+      expect(response[:message]).to eq('Not Found')
+      expect(response[:body]).to be_nil
+    end
+
     it 'when call create() method without set configuration befored' do
       PagseguroRecorrencia::PagCore.reset
       payload = {

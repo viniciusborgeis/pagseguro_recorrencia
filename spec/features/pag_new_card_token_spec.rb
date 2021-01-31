@@ -35,5 +35,18 @@ RSpec.describe PagseguroRecorrencia do
       expect(response[:body][:error][:code]).to eq('30400')
       expect(response[:body][:error][:message]).to eq('invalid creditcard data')
     end
+
+    it 'when request return 404 not found' do
+      payload[:card_number] = '404'
+      response = PagseguroRecorrencia.new_card_token(payload)
+      expect(response.class).to eq(Hash)
+      expect(response.key?(:code)).to be_truthy
+      expect(response.key?(:message)).to be_truthy
+      expect(response.key?(:body)).to be_truthy
+
+      expect(response[:code]).to eq('404')
+      expect(response[:message]).to eq('Not Found')
+      expect(response[:body]).to be_nil
+    end
   end
 end

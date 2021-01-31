@@ -36,4 +36,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency('activesupport', '~> 4.2', '>= 4.2.6')
   spec.add_dependency('json', '2.3.0')
   spec.add_dependency('ruby-enum', '~> 0.8.0')
+  spec.add_dependency('nokogiri', '~> 1.6', '>= 1.6.8')
 end

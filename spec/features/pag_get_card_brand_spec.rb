@@ -33,5 +33,18 @@ RSpec.describe PagseguroRecorrencia do
       expect(response[:body][:status_message]).to eq('Error')
       expect(response[:body][:reason_message]).to eq('Bin not found')
     end
+
+    it 'when request return 404 not found' do
+      bin = '404'
+      response = PagseguroRecorrencia.get_card_brand(bin)
+      expect(response.class).to eq(Hash)
+      expect(response.key?(:code)).to be_truthy
+      expect(response.key?(:message)).to be_truthy
+      expect(response.key?(:body)).to be_truthy
+
+      expect(response[:code]).to eq('404')
+      expect(response[:message]).to eq('Not Found')
+      expect(response[:body]).to be_nil
+    end
   end
 end
