@@ -7,42 +7,35 @@ module PagseguroRecorrencia
   module PagRequests
     class NewSession < RequestApplication
       def create
-        url = build_environment_url(PagseguroRecorrencia::PagCore.configuration, :new_session)
-        header_content_type = 'application/x-www-form-urlencoded'
-        https, request = build_https_request(url, :post, header_content_type).values_at(:https, :request)
-        response = request_safe(https, request)
-        
-        if !response[:body].nil? && !response[:body].is_a?(String) && response[:body].key?(:session)
-          define_session_id(response[:body][:session][:id])
-        end
+        url = url_environment(PagseguroRecorrencia::PagCore.configuration, :new_session)
+        header = { content_type: header_content_type(:form) }
 
-        response
+        https, request = request_https(url, :post, header).values_at(:https, :request)
+        
+        response = request_safe(https, request)
+        parsed_response = parse_response(response)        
+        check_to_define_session(parsed_response)
+
+        parsed_response
       end
 
       private
 
-      def request_safe(https, request)
-        response = https.request(request)
-
-        3.times do |_i|
-          break if response.code != status_code.not_found
-          response = https.request(request)
+      def check_to_define_session(response)
+        if !response[:body].nil? && !response[:body].is_a?(String)
+          if response[:body].key?(:session)
+            define_session_id(response[:body][:session][:id])
+          end
         end
-
-        parse_response(response)
       end
 
       def parse_response(response)
         response_code = response.code
         response_msg = response.msg
 
-        if response_code == status_code.not_found
-          response_body = nil
-        elsif response_code != status_code.unauthorized && response_code != status_code.not_found
-          response_body = parse_xml_to_hash(response.read_body)
-        else
-          response_body = response.read_body
-        end
+        response_body = response.read_body
+        response_body = nil if [STATUS_CODE.not_found].include?(response_code)          
+        response_body = parse_xml_to_hash(response.read_body) if ![STATUS_CODE.unauthorized, STATUS_CODE.not_found].include?(response_code)
 
         {
           code: response_code,

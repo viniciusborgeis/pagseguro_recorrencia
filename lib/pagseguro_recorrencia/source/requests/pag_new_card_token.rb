@@ -1,37 +1,28 @@
 require 'uri'
 require 'net/http'
 require 'pagseguro_recorrencia/source/requests/request_application'
-require 'pagseguro_recorrencia/source/builds/build_url_param'
 
 
 module PagseguroRecorrencia
   module PagRequests
     class NewCardToken < RequestApplication
       def create(payload)
-        url = 'https://df.uol.com.br/v2/cards'
-        content_type = 'application/x-www-form-urlencoded'
+        header = { content_type: header_content_type(:form) }
         payload[:session_id] = PagseguroRecorrencia::PagCore.configuration.session_id
+        url = url_credit_card(payload, :new_card_token)
 
-        https, request = build_https_request(url, :post, content_type).values_at(:https, :request)
-        request.body = PagseguroRecorrencia::Builds::UrlParam.new_card_token(payload)
+        https, request = request_https(url, :post, header).values_at(:https, :request)
+        request.body = url_param_new_card_token(payload)
+
         response = request_safe(https, request)
-        return create(payload) if check_session_id(response)
+        parsed_response = parse_response(response)
 
-        response
+        return create(payload) if check_session_id(parsed_response)
+
+        parsed_response
       end
 
       private
-
-      def request_safe(https, request)
-        response = https.request(request)
-
-        3.times do |_i|
-          break if response.code != status_code.not_found
-          response = https.request(request)
-        end
-
-        parse_response(response)
-      end
 
       def check_session_id(response)
         recall = false
@@ -47,7 +38,7 @@ module PagseguroRecorrencia
         response_msg = response.msg
         response_body = nil
 
-        if response_code != status_code.not_found
+        if response_code != STATUS_CODE.not_found
           response_body = parse_xml_to_hash(response.read_body)
           response_body = response_body[:errors] if response_body.key?(:errors)
         end

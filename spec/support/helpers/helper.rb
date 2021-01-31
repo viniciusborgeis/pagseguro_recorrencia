@@ -34,7 +34,8 @@ def new_card_token_payload
     card_number: '5132 1034 2688 8543',
     card_brand: 'mastercard',
     card_cvv: '534',
-    card_expiration_month: '05'
+    card_expiration_month: '05',
+    card_expiration_year: '2022'
   }
 end
 
